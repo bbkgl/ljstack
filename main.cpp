@@ -1,14 +1,17 @@
 #include <iostream>
+#include "utils.h"
 #include "process_handler.h"
 
 using namespace ljstack;
 
 int main() {
-    ProcessHandler handler(19159);
-    handler.attach();
-    int *ptr = (int *)(void *)(0x000055c9ac9dd014);
+    ProcessHandler handler(30972);
+    int a = handler.attach();
+    if (a < 0) return -1;
+    int *ptr = (int *)(void *)(0x00005557e8d5c014);
     int ret = handler.geto(ptr);
-    handler.detach();
-    printf("%d\n", ret);
+    a = handler.detach();
+    if (a < 0) return -1;
+    LOG_OUT("%d", ret);
     return 0;
 }

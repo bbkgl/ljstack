@@ -1,10 +1,7 @@
-//
-// Created by bbkgl on 20-6-4.
-//
-
 #include "process_handler.h"
 #include <sys/ptrace.h>
 #include <iostream>
+#include "utils.h"
 
 ljstack::ProcessHandler::ProcessHandler(pid_t pid) {
     pid_ = pid;
@@ -18,7 +15,7 @@ ljstack::ProcessHandler::~ProcessHandler() {
 
 int ljstack::ProcessHandler::attach() {
     if (-1 == ptrace(PTRACE_ATTACH, pid_, nullptr, nullptr)) {
-        std::cerr << "attach error!" << std::endl;
+        LOG_ERR("attach failed(%d)!", errno);
         return -1;
     }
     if (!wait4stop()) {
