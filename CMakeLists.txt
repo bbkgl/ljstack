@@ -5,9 +5,15 @@ set(CMAKE_CXX_STANDARD 14)
 
 include_directories(include)
 include_directories(include/luajit21)
-aux_source_directory(src DIR_SRCS)
+# 添加所有源文件
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src SRCLIST)
 
-add_executable(ljstack main.cpp)
+# 将源文件打包成动态库
+add_library(libljstack SHARED ${SRCLIST})
 
-target_link_libraries(ljstack DIR_SRCS)
+add_executable(ljstack  main.cpp)
+
+target_link_libraries(ljstack
+        libljstack
+        )
 
