@@ -26,7 +26,7 @@ namespace ljstack {
     inline std::string GET_TIME() {
         char timebuf[80];
         std::time_t t1 = hrs::to_time_t(hrs::now());
-        std:strftime(timebuf, 80, "%Y-%m-%d %H:%M:%S", std::localtime(&t1));
+        std::strftime(timebuf, 80, "%Y-%m-%d %H:%M:%S", std::localtime(&t1));
         return std::string(timebuf);
     }
 }

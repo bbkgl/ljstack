@@ -3,6 +3,15 @@ project(ljstack)
 
 set(CMAKE_CXX_STANDARD 14)
 
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
+set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O2 -Wall -g -ggdb")
+set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3")
+
 include_directories(include)
 include_directories(include/luajit21)
 # 添加所有源文件
@@ -14,6 +23,6 @@ add_library(libljstack SHARED ${SRCLIST})
 add_executable(ljstack  main.cpp)
 
 target_link_libraries(ljstack
-        libljstack
-        )
+    libljstack
+)
 
