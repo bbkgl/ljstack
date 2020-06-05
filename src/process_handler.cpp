@@ -16,11 +16,11 @@ namespace ljstack {
 
     int ProcessHandler::attach() {
         if (-1 == ptrace(PTRACE_ATTACH, pid_, nullptr, nullptr)) {
-            LOG_ERR("attach failed(%d)!", errno);
+            LOG_ERR("attach process (%d) failed (%s)!", pid_, strerror(errno));
             return -1;
         }
         if (!wait4stop()) {
-            std::cerr << "wait error!" << std::endl;
+            LOG_ERR("wait process (%d) failed (%s)!", pid_, strerror(errno));
             return -1;
         }
         return 0;
@@ -28,7 +28,7 @@ namespace ljstack {
 
     int ProcessHandler::detach() {
         if (-1 == ptrace(PTRACE_DETACH, pid_, nullptr, nullptr)) {
-            std::cerr << "detach error!" << std::endl;
+            LOG_ERR("detach process (%d) failed (%s)!", pid_, strerror(errno));
             return -1;
         }
         return 0;
