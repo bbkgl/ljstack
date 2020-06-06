@@ -1,12 +1,13 @@
 #ifndef LJSTACK_LUA_STRUCT_H
 #define LJSTACK_LUA_STRUCT_H
 
-#define LJ_GC64            0
+// 在cmake中控制
+// #define LJ_GC64    0
 
 #if LJ_GC64
 #define LJ_FR2			1
 #else
-#define LJ_FR2            0
+#define LJ_FR2      0
 #endif
 
 /* GCobj reference */
