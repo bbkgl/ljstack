@@ -10,6 +10,10 @@ namespace ljstack {
         mem_file_ = "/proc/" + std::to_string(pid) + "/mem";
         maps_file_ = "/proc/" + std::to_string(pid) + "/maps";
         mem_fd_ = open(mem_file_.c_str(), O_RDONLY);
+        if (mem_fd_ < 0) {
+            LOG_ERR("Can't open %s, maybe the process %d not exist!", mem_file_.c_str(), pid_);
+            exit(-1);
+        }
         get_elf_type();
     }
 

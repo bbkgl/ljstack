@@ -6,7 +6,7 @@
 using namespace ljstack;
 
 int main() {
-    ProcessHandler *handler = new ProcessHandler(23086);
+    ProcessHandler *handler = new ProcessHandler(10600);
     WrapLuaState *wrap_lua = new WrapLuaState(handler);
     return 0;
 }

@@ -61,7 +61,7 @@ namespace ljstack {
             }
         }
 
-        inline uintptr_t get_addrbysymbol(std::string symbol) {
+        inline uintptr_t get_addrbysymbol(std::string &&symbol) {
             int fd = open(elf_file_.c_str(), O_RDONLY);
             elf::elf f(elf::create_mmap_loader(fd));
             for (auto &sec : f.sections()) {
