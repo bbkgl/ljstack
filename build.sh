@@ -15,5 +15,3 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Debug ..
 # 执行cmake命令生成的Makefile文件
 make
-# 安装生成的库和头文件到系统目录
-sudo make install
