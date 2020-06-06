@@ -14,9 +14,15 @@
 #include <elf.h>
 #include <fstream>
 #include <string>
+#include <sys/ptrace.h>
 #include "utils.h"
 
 namespace ljstack {
+    enum Register {
+        LJ_RIP,
+        LJ_RDX,
+    };
+
     class ProcessHandler {
     public:
         explicit ProcessHandler(pid_t pid);
@@ -38,6 +44,31 @@ namespace ljstack {
             long ret = read(mem_fd_, dst, len);
             if (errno != 0 || offset < 0 || ret < 0)
                 throw "read memory failed!";
+        }
+
+        inline uintptr_t get_register(Register reg) {
+            long reg_value = 0;
+            char regname[20];
+            switch (reg) {
+                case LJ_RIP:
+                    reg_value = ptrace(PTRACE_PEEKUSER, pid_, 8 * REG_RIP, nullptr);
+                    strcpy(regname, "RIP");
+                    break;
+                case LJ_RDX:
+                    reg_value = ptrace(PTRACE_PEEKUSER, pid_, 8 * REG_RDX, nullptr);
+                    strcpy(regname, "RIP");
+                    break;
+                default:
+                    reg_value = -1;
+                    strcpy(regname, "Unknown register");
+                    break;
+            }
+            if (reg_value >= 0)
+                return static_cast<uintptr_t>(reg_value);
+            else {
+                LOG_OUT("Get the register %s failed!", regname);
+                return 0xffffffffffffffff;  // -1
+            }
         }
 
         inline void get_elf_type() {
