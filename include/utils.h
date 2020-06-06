@@ -5,7 +5,6 @@
 #include <chrono>
 #include <cstring>
 
-
 #define __FILENAME__ ((strrchr(__FILE__, '/')) + 1)
 #define LOG_OUT(fmt, ...) fprintf(stdout, "[%s] [%s:%d %s] " fmt "\n", ljstack::GET_TIME().c_str(), __FILENAME__, \
 __LINE__, __FUNCTION__, ##__VA_ARGS__)

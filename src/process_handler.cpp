@@ -6,8 +6,11 @@
 namespace ljstack {
     ProcessHandler::ProcessHandler(pid_t pid) {
         pid_ = pid;
+        elf_file_ = "/proc/" + std::to_string(pid) + "/exe";
         mem_file_ = "/proc/" + std::to_string(pid) + "/mem";
+        maps_file_ = "/proc/" + std::to_string(pid) + "/maps";
         mem_fd_ = open(mem_file_.c_str(), O_RDONLY);
+        get_elf_type();
     }
 
     ProcessHandler::~ProcessHandler() {

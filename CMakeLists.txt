@@ -9,7 +9,7 @@ endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O2 -Wall -g -ggdb")
+set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
 set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3")
 
 include_directories(include)
@@ -20,9 +20,9 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src SRCLIST)
 # 将源文件打包成动态库
 add_library(libljstack SHARED ${SRCLIST})
 
-add_executable(ljstack  main.cpp)
+add_executable(ljstack  main.cpp ${SRCLIST})
 
 target_link_libraries(ljstack
-    libljstack
+    elf++
 )
 
