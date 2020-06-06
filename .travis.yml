@@ -1,0 +1,15 @@
+language: cpp
+sudo: required
+dist: trusty
+compiler:
+  - g++
+os:
+  - linux
+install:
+  - sudo apt-get install cmake
+  - sudo apt-get install libelfin-dev
+
+before_install:
+   - chmod +x build.sh
+script:
+- ./build.sh
