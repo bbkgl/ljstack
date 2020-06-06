@@ -2,7 +2,7 @@
 #define LJSTACK_LUA_STRUCT_H
 
 // 在cmake中控制
-// #define LJ_GC64    0
+// #define LJ_GC64
 
 #if LJ_GC64
 #define LJ_FR2			1
@@ -15,7 +15,7 @@ typedef struct GCRef {
 #if LJ_GC64
     uint64_t gcptr64;	/* True 64 bit pointer. */
 #else
-    uint32_t gcptr32;	/* Pseudo 32 bit pointer. */
+    uint32_t gcptr32;    /* Pseudo 32 bit pointer. */
 #endif
 } GCRef;
 
@@ -35,19 +35,19 @@ typedef uint32_t MSize;
 
 /* Frame link. */
 typedef union {
-    int32_t ftsz;		/* Frame type and size of previous frame. */
-    MRef pcr;		/* Or PC for Lua frames. */
+    int32_t ftsz;        /* Frame type and size of previous frame. */
+    MRef pcr;        /* Or PC for Lua frames. */
 } FrameLink;
 
 /* Tagged value. */
-#define LUA_NUMBER		double
+#define LUA_NUMBER        double
 #define lua_Number LUA_NUMBER
-#define LJ_ENDIAN_LOHI(lo, hi)		lo hi
-#define LJ_ALIGN(n)	__attribute__((aligned(n)))
+#define LJ_ENDIAN_LOHI(lo, hi)        lo hi
+#define LJ_ALIGN(n)    __attribute__((aligned(n)))
 /* Tagged value. */
 typedef LJ_ALIGN(8) union TValue {
-    uint64_t u64;		/* 64 bit pattern overlaps number. */
-    lua_Number n;		/* Number object overlaps split tag/value object. */
+    uint64_t u64;        /* 64 bit pattern overlaps number. */
+    lua_Number n;        /* Number object overlaps split tag/value object. */
 #if LJ_GC64
     GCRef gcr;		/* GCobj reference with tag. */
   int64_t it64;
@@ -60,11 +60,10 @@ typedef LJ_ALIGN(8) union TValue {
 #else
     struct {
         LJ_ENDIAN_LOHI(
-            union {
-                GCRef gcr;	/* GCobj reference (if any). */
-                int32_t i;	/* Integer value. */
-            };
-        , uint32_t it;	/* Internal object tag. Must overlap MSW of number. */
+                union {
+                    GCRef gcr;    /* GCobj reference (if any). */
+                    int32_t i;    /* Integer value. */
+                };, uint32_t it;    /* Internal object tag. Must overlap MSW of number. */
         )
     };
 #endif
@@ -73,15 +72,15 @@ typedef LJ_ALIGN(8) union TValue {
 #else
     struct {
         LJ_ENDIAN_LOHI(
-                GCRef func;	/* Function for next frame (or dummy L). */
-        , FrameLink tp;	/* Link to previous frame. */
+                GCRef func;    /* Function for next frame (or dummy L). */
+        , FrameLink tp;    /* Link to previous frame. */
         )
     } fr;
 #endif
     struct {
         LJ_ENDIAN_LOHI(
-                uint32_t lo;	/* Lower 32 bits of number. */
-        , uint32_t hi;	/* Upper 32 bits of number. */
+                uint32_t lo;    /* Lower 32 bits of number. */
+        , uint32_t hi;    /* Upper 32 bits of number. */
         )
     } u32;
 } TValue;

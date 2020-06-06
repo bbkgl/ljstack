@@ -23,6 +23,17 @@ echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
 echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
 ```
 
+### luajit版本
+
+默认情况下，支持luajit的2.0以及2.1的32位版本。
+
+如果要支持luajit的2.1的64位版本，需要在cmake生成makefile的时候，执行：
+
+```shell
+cmake .. -DLJ_GC64
+```
+
+
 ### luajit的符号表
 
 默认情况下，luajit在编译的时候指定了参数，取出了部分符号，导致ljstack无法获取到符号以及对应的地址。

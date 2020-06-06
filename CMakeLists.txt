@@ -3,8 +3,10 @@ project(ljstack)
 
 set(CMAKE_CXX_STANDARD 14)
 
-# 是否为64位的luajit
-add_definitions(-DLJ_GC64)
+# 默认情况下，支持的是Luajit2.1 32位和Luajit2.0
+if (NOT LJ_GC64)
+    set(LJ_GC64 0)
+endif()
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
@@ -12,8 +14,11 @@ endif()
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 if (${LJ_GC64})
+    # 64位的luajit
+    add_definitions("-DLJ_GC64=1")
     message(STATUS "Support Luajit: LJ_GC64")
 else()
+    add_definitions("-DLJ_GC64=0")
     message(STATUS "Support Luajit: LJ_GC32")
 endif()
 
