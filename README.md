@@ -1,6 +1,6 @@
 # ljstack
 
-[![Build Status](https://travis-ci.org/bbkgl/ljstack.svg?branch=master)](https://travis-ci.org/bbkgl/ljstack) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://api.travis-ci.org/bbkgl/ljstack.svg?branch=master)](https://travis-ci.org/bbkgl/ljstack) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
 
 ljstack是一个能够对luajit2.1进程进行profile的工具，同时也是一个库。
 
