@@ -15,12 +15,41 @@
 #include <fstream>
 #include <string>
 #include <sys/ptrace.h>
+#include <exception>
 #include "utils.h"
 
 namespace ljstack {
+    class ProcessHandler;
+
+
     enum Register {
         LJ_RIP,
         LJ_RDX,
+    };
+
+    enum PStatus {
+        RUNING,
+        STOP,
+    };
+
+    class AccessException : std::exception {
+        const char* what() const throw() {
+            return "read memory failed!";
+        }
+    };
+
+    class PtraceException : std::exception {
+    public:
+        PtraceException(std::string &&msg) {
+            errmsg_ = "ptrace failed!" + msg;
+        }
+
+        const char* what() const throw() {
+            return errmsg_.c_str();
+        }
+
+    private:
+        std::string errmsg_;
     };
 
     class ProcessHandler {
@@ -43,7 +72,7 @@ namespace ljstack {
             long offset = lseek(mem_fd_, reinterpret_cast<uintptr_t>(src), SEEK_SET);
             long ret = read(mem_fd_, dst, len);
             if (errno != 0 || offset < 0 || ret < 0)
-                throw "read memory failed!";
+                throw AccessException();
         }
 
         inline uintptr_t get_register(Register reg) {
@@ -108,6 +137,10 @@ namespace ljstack {
             return 0;
         }
 
+        inline int get_status() {
+            return status_;
+        }
+
     private:
         inline void get_text_addr() {
             std::ifstream maps_steam(maps_file_.c_str());
@@ -139,6 +172,8 @@ namespace ljstack {
         int mem_fd_;
         pid_t pid_;
         uintptr_t text_addr_;
+
+        PStatus status_;
     };
 }
 

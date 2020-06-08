@@ -27,6 +27,8 @@ namespace ljstack {
     }
 
     void WrapLuaState::update() {
-
+        if (process_handler_->get_status() == STOP) {
+            contentL = process_handler_->geto(globalL);
+        } else throw PtraceException("Process still running!");
     }
 }

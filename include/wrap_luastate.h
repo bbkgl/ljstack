@@ -15,6 +15,8 @@ namespace ljstack {
         ProcessHandler *process_handler_;
 
         lua_State *globalL;
+
+        lua_State contentL;
     };
 }
 

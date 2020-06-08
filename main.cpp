@@ -8,11 +8,12 @@ using namespace ljstack;
 int main() {
     LOG_OUT("LG_GC64:%d", LJ_GC64);
 
-    ProcessHandler *handler = new ProcessHandler(5153);
+    ProcessHandler *handler = new ProcessHandler(27877);
 //    WrapLuaState *wrap_lua = new WrapLuaState(handler);
 //    delete wrap_lua;
+    int *ptr = (int *)0xfffffffffff;
     handler->attach();
-    LOG_OUT("Reg: 0x%016lx", handler->get_register(LJ_RDX));
+    handler->geto(ptr);
     handler->detach();
     delete handler;
     return 0;
