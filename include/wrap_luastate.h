@@ -11,12 +11,20 @@ namespace ljstack {
 
         void update();
 
+        inline lua_State *get_globalL() { return globalL_; }
+
+        inline lua_State *get_nowL() { return nowL; }
+
+        inline lua_State *getL() { return &contentL_; }
+
     private:
         ProcessHandler *process_handler_;
 
-        lua_State *globalL;
+        lua_State *globalL_;
 
-        lua_State contentL;
+        lua_State *nowL;
+
+        lua_State contentL_;
     };
 }
 

@@ -15,7 +15,7 @@ namespace ljstack {
             if (ret < 0) {
                 exit(-1);
             }
-            globalL = process_handler_->geto((lua_State **)addr_globalL);
+            globalL_ = process_handler_->geto((lua_State **)addr_globalL);
             ret = process_handler_->detach();
             if (ret < 0) {
                 exit(-1);
@@ -28,7 +28,8 @@ namespace ljstack {
 
     void WrapLuaState::update() {
         if (process_handler_->get_status() == STOP) {
-            contentL = process_handler_->geto(globalL);
+            nowL = globalL_;
+            contentL_ = process_handler_->geto(nowL);
         } else throw PtraceException("Process still running!");
     }
 }

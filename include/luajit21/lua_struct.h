@@ -4,11 +4,23 @@
 // 在cmake中控制
 // #define LJ_GC64
 
+#include <cstdint>
+
 #if LJ_GC64
 #define LJ_FR2			1
 #else
 #define LJ_FR2      0
 #endif
+
+/* Types for handling bytecodes. Need this here, details in lj_bc.h. */
+typedef uint32_t BCIns;  /* Bytecode instruction. */
+typedef uint32_t BCPos;  /* Bytecode position. */
+typedef uint32_t BCReg;  /* Bytecode register. */
+typedef int32_t BCLine;  /* Bytecode line number. */
+
+struct lua_State;
+
+typedef int (*lua_CFunction) (lua_State *L);
 
 /* GCobj reference */
 typedef struct GCRef {
@@ -103,5 +115,130 @@ struct lua_State {
     void *cframe;        /* End of C stack frame chain. */
     MSize stacksize;    /* True stack size (incl. LJ_STACK_EXTRA). */
 };
+
+/* GC header for generic access to common fields of GC objects. */
+typedef struct GChead {
+    GCHeader;
+    uint8_t unused1;
+    uint8_t unused2;
+    GCRef env;
+    GCRef gclist;
+    GCRef metatable;
+} GChead;
+
+/* String object header. String payload follows. */
+typedef struct GCstr {
+    GCHeader;
+    uint8_t reserved;	/* Used by lexer for fast lookup of reserved words. */
+    uint8_t unused;
+    MSize hash;		/* Hash of string. */
+    MSize len;		/* Size of string. */
+} GCstr;
+
+typedef struct GCupval {
+    GCHeader;
+    uint8_t closed;	/* Set if closed (i.e. uv->v == &uv->u.value). */
+    uint8_t immutable;	/* Immutable value. */
+    union {
+        TValue tv;		/* If closed: the value itself. */
+        struct {		/* If open: double linked list, anchored at thread. */
+            GCRef prev;
+            GCRef next;
+        };
+    };
+    MRef v;		/* Points to stack slot (open) or above (closed). */
+    uint32_t dhash;	/* Disambiguation hash: dh1 != dh2 => cannot alias. */
+} GCupval;
+
+typedef struct GCproto {
+    GCHeader;
+    uint8_t numparams;	/* Number of parameters. */
+    uint8_t framesize;	/* Fixed frame size. */
+    MSize sizebc;		/* Number of bytecode instructions. */
+#if LJ_GC64
+    uint32_t unused_gc64;
+#endif
+    GCRef gclist;
+    MRef k;		/* Split constant array (points to the middle). */
+    MRef uv;		/* Upvalue list. local slot|0x8000 or parent uv idx. */
+    MSize sizekgc;	/* Number of collectable constants. */
+    MSize sizekn;		/* Number of lua_Number constants. */
+    MSize sizept;		/* Total size including colocated arrays. */
+    uint8_t sizeuv;	/* Number of upvalues. */
+    uint8_t flags;	/* Miscellaneous flags (see below). */
+    uint16_t trace;	/* Anchor for chain of root traces. */
+    /* ------ The following fields are for debugging/tracebacks only ------ */
+    GCRef chunkname;	/* Name of the chunk this function was defined in. */
+    BCLine firstline;	/* First line of the function definition. */
+    BCLine numline;	/* Number of lines for the function definition. */
+    MRef lineinfo;	/* Compressed map from bytecode ins. to source line. */
+    MRef uvinfo;		/* Upvalue names. */
+    MRef varinfo;		/* Names and compressed extents of local variables. */
+} GCproto;
+
+/* Common header for functions. env should be at same offset in GCudata. */
+#define GCfuncHeader \
+  GCHeader; uint8_t ffid; uint8_t nupvalues; \
+  GCRef env; GCRef gclist; MRef pc
+
+typedef struct GCfuncC {
+    GCfuncHeader;
+    lua_CFunction f;	/* C function to be called. */
+    TValue upvalue[1];	/* Array of upvalues (TValue). */
+} GCfuncC;
+
+typedef struct GCfuncL {
+    GCfuncHeader;
+    GCRef uvptr[1];	/* Array of _pointers_ to upvalue objects (GCupval). */
+} GCfuncL;
+
+typedef union GCfunc {
+    GCfuncC c;
+    GCfuncL l;
+} GCfunc;
+
+/* C data object. Payload follows. */
+typedef struct GCcdata {
+    GCHeader;
+    uint16_t ctypeid;	/* C type ID. */
+} GCcdata;
+
+typedef struct GCtab {
+    GCHeader;
+    uint8_t nomm;		/* Negative cache for fast metamethods. */
+    int8_t colo;		/* Array colocation. */
+    MRef array;		/* Array part. */
+    GCRef gclist;
+    GCRef metatable;	/* Must be at same offset in GCudata. */
+    MRef node;		/* Hash part. */
+    uint32_t asize;	/* Size of array part (keys [0, asize-1]). */
+    uint32_t hmask;	/* Hash part mask (size of hash part - 1). */
+#if LJ_GC64
+    MRef freetop;		/* Top of free elements. */
+#endif
+} GCtab;
+
+/* Userdata object. Payload follows. */
+typedef struct GCudata {
+    GCHeader;
+    uint8_t udtype;	/* Userdata type. */
+    uint8_t unused2;
+    GCRef env;		/* Should be at same offset in GCfunc. */
+    MSize len;		/* Size of payload. */
+    GCRef metatable;	/* Must be at same offset in GCtab. */
+    uint32_t align1;	/* To force 8 byte alignment of the payload. */
+} GCudata;
+
+typedef union GCobj {
+    GChead gch;
+    GCstr str;
+    GCupval uv;
+    lua_State th;
+    GCproto pt;
+    GCfunc fn;
+    GCcdata cd;
+    GCtab tab;
+    GCudata ud;
+} GCobj;
 
 #endif //LJSTACK_LUA_STRUCT_H
