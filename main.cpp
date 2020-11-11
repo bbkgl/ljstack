@@ -8,9 +8,9 @@ using namespace ljstack;
 
 int main() {
     LOG_OUT("LG_GC64:%d", LJ_GC64);
-    ProcessHandler *handler = new ProcessHandler(17818);
-    WrapLuaState *wrap_l = new WrapLuaState(handler);
-    LJGetFrame *geter = new LJGetFrame(wrap_l, handler);
+    auto handler = new ProcessHandler(12790);
+    auto wrap_l = new WrapLuaState(handler);
+    auto *geter = new LJGetFrame(wrap_l, handler);
     int size = 0;
     handler->attach();
     wrap_l->update();

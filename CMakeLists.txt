@@ -38,4 +38,3 @@ add_executable(ljstack  main.cpp ${SRCLIST})
 target_link_libraries(ljstack
     elf++
 )
-

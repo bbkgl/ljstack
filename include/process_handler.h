@@ -63,7 +63,7 @@ namespace ljstack {
             return obj;
         }
 
-        inline void lj_memcpy(void *src, void *dst, size_t len) {
+        inline void lj_memcpy(void *src, void *dst, size_t len) const {
             long offset = lseek(mem_fd_, reinterpret_cast<uintptr_t>(src), SEEK_SET);
             long ret = read(mem_fd_, dst, len);
             if (errno != 0 || offset < 0 || ret < 0)
@@ -166,7 +166,7 @@ namespace ljstack {
         std::string elf_file_;
         int mem_fd_;
         pid_t pid_;
-        uintptr_t text_addr_;
+        uintptr_t text_addr_{};
 
         PStatus status_;
     };
